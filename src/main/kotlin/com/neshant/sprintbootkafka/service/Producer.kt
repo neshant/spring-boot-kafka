@@ -20,6 +20,18 @@ class Producer(
 
     val logger = KotlinLogging.logger { }
 
+    fun createNewCustomer(customer: Customer) {
+        kafkaTemplate.send(NEW_CUSTOMER_TOPIC, mapper.writeValueAsString(customer))
+    }
+
+    /**
+     * spring scheduler to generate events on regular intervals for the demo
+     */
+    @Scheduled(fixedDelay = 1000L)
+    fun autoGenerateAndSendNewCustomers() {
+        sendNewCustomerDetails()
+    }
+
     fun sendNewCustomerDetails() {
         for (i in 1..5) {
             val customer = Customer(
@@ -36,14 +48,5 @@ class Producer(
 
             kafkaTemplate.send(NEW_CUSTOMER_TOPIC, mapper.writeValueAsString(customer))
         }
-    }
-
-    fun createNewCustomer(customer: Customer) {
-        kafkaTemplate.send(NEW_CUSTOMER_TOPIC, mapper.writeValueAsString(customer))
-    }
-
-    @Scheduled(fixedDelay = 1000L)
-    fun autoGenerateAndSendNewCustomers() {
-        sendNewCustomerDetails()
     }
 }
