@@ -4,6 +4,8 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.spring' version '1.2.71'
 }
 
+def env = project.hasProperty('env') ? project.property('env') : 'local'
+
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.neshant'
@@ -44,4 +46,24 @@ compileTestKotlin {
         freeCompilerArgs = ['-Xjsr305=strict']
         jvmTarget = '1.8'
     }
+}
+
+task startServices(type: Exec) {
+    group = 'Docker Services'
+    description = 'Start docker containers used for development.'
+
+    commandLine 'docker-compose', 'up', '-d'
+}
+
+task stopServices(type: Exec) {
+    group = 'Docker Services'
+    description = 'Stop docker containers used for development.'
+
+    commandLine 'docker-compose', 'down'
+}
+
+// make sure services are running for bootRun in a local environment
+if (env == 'local') {
+    test.dependsOn(startServices)
+    bootRun.dependsOn(startServices)
 }
