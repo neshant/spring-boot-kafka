@@ -3,4 +3,4 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 }
-rootProject.name = 'sprint-boot-kafka'
+rootProject.name = 'spring-boot-kafka'
